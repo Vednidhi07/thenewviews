@@ -2,14 +2,12 @@ const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const { URL } = require('url'); // Import URL module for URL parsing
+const { URL } = require('url');
 
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, '/')));
-
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
@@ -25,12 +23,49 @@ app.get('/', (req, res) => {
     <body>
       <div class="container">
         <h2>Download HTML Source Code</h2>
-        <form action="/download" method="post">
+        <form id="sourceCodeForm">
           <label for="url">Enter URL or Domain Name:</label>
           <input type="text" id="url" name="url" required>
-          <button type="submit">Download Source Code</button>
+          <button type="button" id="getSourceCodeButton">Get Source Code</button>
         </form>
+        <div id="sourceCodeContainer" style="display: none;">
+          <h3>Source Code:</h3>
+          <pre id="sourceCode"></pre>
+          <form id="downloadForm" action="/download-file" method="post">
+            <input type="hidden" id="hiddenUrl" name="url">
+            <button type="submit">Download Source Code</button>
+          </form>
+        </div>
       </div>
+      <script>
+        document.getElementById('getSourceCodeButton').addEventListener('click', async () => {
+          const url = document.getElementById('url').value;
+
+          if (url) {
+            try {
+              const response = await fetch('/download', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ url }),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                document.getElementById('sourceCode').textContent = data.htmlContent;
+                document.getElementById('hiddenUrl').value = url;
+                document.getElementById('sourceCodeContainer').style.display = 'block';
+              } else {
+                alert('Error fetching the URL. Please try again.');
+              }
+            } catch (error) {
+              console.error('Error fetching the URL:', error);
+              alert('Error fetching the URL. Please try again.');
+            }
+          }
+        });
+      </script>
     </body>
     </html>
   `);
@@ -39,35 +74,46 @@ app.get('/', (req, res) => {
 app.post('/download', async (req, res) => {
   let url = req.body.url.trim();
 
-  // Check if the input is just a domain name without protocol
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = `http://${url}`; // Assume HTTP protocol if none provided
+    url = `http://${url}`;
   }
 
   try {
     const response = await axios.get(url);
     const htmlContent = response.data;
 
-    // Parse the URL to get the hostname
+    res.send({ htmlContent });
+  } catch (error) {
+    console.error('Error fetching the URL:', error);
+    res.status(500).send('Error fetching the URL. Please try again.');
+  }
+});
+
+app.post('/download-file', async (req, res) => {
+  let url = req.body.url.trim();
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = `http://${url}`;
+  }
+
+  try {
+    const response = await axios.get(url);
+    const htmlContent = response.data;
+
     const parsedUrl = new URL(url);
     const domainName = parsedUrl.hostname;
-
-    // Remove extension from domain name if it exists
     const domainWithoutExtension = domainName.replace(/\.[^/.]+$/, "");
 
-    // Generate file path and name based on domain name without extension
     const fileName = `${domainWithoutExtension}.html`;
     const filePath = path.join(__dirname, fileName);
 
-    // Write HTML content to file
     fs.writeFileSync(filePath, htmlContent);
 
-    // Send the file as a download with the domain name as the filename
     res.download(filePath, fileName, (err) => {
       if (err) {
         console.error('Error during file download:', err);
       }
-      fs.unlinkSync(filePath); // Delete the file after sending it
+      fs.unlinkSync(filePath);
     });
   } catch (error) {
     console.error('Error fetching the URL:', error);
