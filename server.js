@@ -29,8 +29,9 @@ app.get('/', (req, res) => {
           <input type="text" id="url" name="url" required>
           <button type="button" id="getSourceCodeButton">Get Source Code</button>
         </form>
-        <div id="sourceCodeContainer" style="display: none;">
+        <div id="sourceCodeContainer" style="display: none; position: relative;">
           <h3>Source Code:</h3>
+          <button id="copyButton" style="position: absolute; top: 0; right: 0;">Copy</button>
           <pre id="sourceCode"></pre>
           <form id="downloadForm" action="/download-file" method="post">
             <input type="hidden" id="hiddenUrl" name="url">
@@ -65,6 +66,15 @@ app.get('/', (req, res) => {
               alert('Error fetching the URL. Please try again.');
             }
           }
+        });
+
+        document.getElementById('copyButton').addEventListener('click', () => {
+          const sourceCode = document.getElementById('sourceCode').textContent;
+          navigator.clipboard.writeText(sourceCode).then(() => {
+            alert('Source code copied to clipboard');
+          }).catch(err => {
+            console.error('Error copying to clipboard:', err);
+          });
         });
       </script>
     </body>
