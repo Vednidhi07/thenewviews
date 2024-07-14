@@ -34,11 +34,11 @@ app.get('/', (req, res) => {
           </div>
           <h3>Source Code:</h3>
           <pre id="sourceCode"></pre>
-          <form id="downloadForm" action="/download-file" method="post">
-            <input type="hidden" id="hiddenUrl" name="url">
-            <button type="submit">Download Source Code</button>
-          </form>
         </div>
+        <form id="downloadForm" action="/download-file" method="post" style="display: none;">
+          <input type="hidden" id="hiddenUrl" name="url">
+          <button type="submit">Download Source Code</button>
+        </form>
       </div>
       <script>
         document.getElementById('getSourceCodeButton').addEventListener('click', async () => {
@@ -59,6 +59,7 @@ app.get('/', (req, res) => {
                 document.getElementById('sourceCode').textContent = data.htmlContent;
                 document.getElementById('hiddenUrl').value = url;
                 document.getElementById('sourceCodeContainer').style.display = 'block';
+                document.getElementById('downloadForm').style.display = 'block';
               } else {
                 alert('Error fetching the URL. Please try again.');
               }
