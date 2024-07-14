@@ -3,7 +3,6 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
-const beautify = require('js-beautify').html;
 
 const app = express();
 const port = 3000;
@@ -29,9 +28,11 @@ app.get('/', (req, res) => {
           <input type="text" id="url" name="url" required>
           <button type="button" id="getSourceCodeButton">Get Source Code</button>
         </form>
-        <div id="sourceCodeContainer" style="display: none; position: relative;">
+        <div id="sourceCodeContainer" style="display: none;">
+          <div class="copy-button-container">
+            <button id="copyButton">Copy to Clipboard</button>
+          </div>
           <h3>Source Code:</h3>
-          <button id="copyButton" style="position: absolute; top: 0; right: 0;">Copy</button>
           <pre id="sourceCode"></pre>
           <form id="downloadForm" action="/download-file" method="post">
             <input type="hidden" id="hiddenUrl" name="url">
@@ -69,12 +70,18 @@ app.get('/', (req, res) => {
         });
 
         document.getElementById('copyButton').addEventListener('click', () => {
-          const sourceCode = document.getElementById('sourceCode').textContent;
-          navigator.clipboard.writeText(sourceCode).then(() => {
+          const sourceCode = document.getElementById('sourceCode');
+          const range = document.createRange();
+          range.selectNode(sourceCode);
+          window.getSelection().removeAllRanges(); 
+          window.getSelection().addRange(range); 
+          try {
+            document.execCommand('copy');
             alert('Source code copied to clipboard');
-          }).catch(err => {
-            console.error('Error copying to clipboard:', err);
-          });
+          } catch (err) {
+            alert('Failed to copy text');
+          }
+          window.getSelection().removeAllRanges();
         });
       </script>
     </body>
@@ -91,8 +98,7 @@ app.post('/download', async (req, res) => {
 
   try {
     const response = await axios.get(url);
-    let htmlContent = response.data;
-    htmlContent = beautify(htmlContent, { indent_size: 2, space_in_empty_paren: true });
+    const htmlContent = response.data;
 
     res.send({ htmlContent });
   } catch (error) {
@@ -110,8 +116,7 @@ app.post('/download-file', async (req, res) => {
 
   try {
     const response = await axios.get(url);
-    let htmlContent = response.data;
-    htmlContent = beautify(htmlContent, { indent_size: 2, space_in_empty_paren: true });
+    const htmlContent = response.data;
 
     const parsedUrl = new URL(url);
     const domainName = parsedUrl.hostname;
