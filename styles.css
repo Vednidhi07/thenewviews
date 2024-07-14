@@ -50,6 +50,7 @@ button[type="submit"]:hover {
   margin-top: 20px;
   max-height: 70vh;
   overflow-y: auto;
+  position: relative;
 }
 
 pre {
@@ -59,4 +60,20 @@ pre {
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #f9f9f9;
+}
+
+#copyButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#copyButton:hover {
+  background-color: #45a049;
 }
