@@ -53,13 +53,15 @@ button[type="submit"]:hover {
   position: relative;
 }
 
-.copy-button-container {
+.button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
 
 #copyButton {
-  padding: 5px 10px;
+  padding: 10px 20px;
   background-color: #008CBA;
   color: white;
   border: none;
@@ -69,6 +71,10 @@ button[type="submit"]:hover {
 
 #copyButton:hover {
   background-color: #007B9E;
+}
+
+.download-button {
+  margin-top: 20px;
 }
 
 pre {
