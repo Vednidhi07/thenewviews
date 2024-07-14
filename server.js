@@ -29,16 +29,16 @@ app.get('/', (req, res) => {
           <button type="button" id="getSourceCodeButton">Get Source Code</button>
         </form>
         <div id="sourceCodeContainer" style="display: none;">
-          <div class="copy-button-container">
-            <button id="copyButton">Copy to Clipboard</button>
-          </div>
           <h3>Source Code:</h3>
           <pre id="sourceCode"></pre>
         </div>
-        <form id="downloadForm" action="/download-file" method="post" style="display: none;">
-          <input type="hidden" id="hiddenUrl" name="url">
-          <button type="submit">Download Source Code</button>
-        </form>
+        <div class="button-container" style="display: none;">
+          <button id="copyButton">Copy to Clipboard</button>
+          <form id="downloadForm" action="/download-file" method="post">
+            <input type="hidden" id="hiddenUrl" name="url">
+            <button type="submit" class="download-button">Download Source Code</button>
+          </form>
+        </div>
       </div>
       <script>
         document.getElementById('getSourceCodeButton').addEventListener('click', async () => {
@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
                 document.getElementById('sourceCode').textContent = data.htmlContent;
                 document.getElementById('hiddenUrl').value = url;
                 document.getElementById('sourceCodeContainer').style.display = 'block';
-                document.getElementById('downloadForm').style.display = 'block';
+                document.querySelector('.button-container').style.display = 'flex';
               } else {
                 alert('Error fetching the URL. Please try again.');
               }
