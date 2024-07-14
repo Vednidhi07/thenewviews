@@ -53,21 +53,14 @@ button[type="submit"]:hover {
   position: relative;
 }
 
-pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+.copy-button-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 #copyButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   padding: 5px 10px;
-  background-color: #4CAF50;
+  background-color: #008CBA;
   color: white;
   border: none;
   border-radius: 4px;
@@ -75,5 +68,14 @@ pre {
 }
 
 #copyButton:hover {
-  background-color: #45a049;
+  background-color: #007B9E;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
 }
